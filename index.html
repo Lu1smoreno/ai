@@ -170,6 +170,7 @@
       box-shadow: 0 12px 40px #00f0ff33;
       transform: translateY(-6px) scale(1.01);
       border-color: var(--neon-blue);
+      filter: drop-shadow(0 0 12px #00f0ff88);
     }
     .course-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; }
     .course-badges { display: flex; gap: 0.5rem; flex-wrap: wrap; }
@@ -195,19 +196,61 @@
     .newsletter-input { flex:1; padding:0.9rem 1.6rem; border:none; border-radius:50px; background:transparent; color:var(--white); font-size: 1rem;}
     .newsletter-input::placeholder { color:rgba(224,225,221,0.6);}
     .newsletter-input:focus { outline:none; background:rgba(0,240,255,.10);}
-    /* Test IA visual */
+    /* Test IA visual mejorado */
     .test-card { max-width: 500px; margin: 2rem auto; background:rgba(27,38,59,.7); border-radius:26px; border:1px solid rgba(119,141,169,.12); padding:2.5rem 2rem;
       box-shadow: 0 0 25px 0 rgba(0,240,255,.07); text-align:center;}
-    .ia-stepper { display:flex; justify-content:center; margin-bottom:1.5rem; gap:0.6rem;}
-    .ia-step-dot { width:18px;height:18px;border-radius:50%;background:linear-gradient(45deg,#00f0ff,#8b5cf6);opacity:.15;transition:.2s;}
-    .ia-step-dot.active { opacity:1; box-shadow:0 0 12px #00f0ff99;}
-    .ia-question { font-size:1.25rem; font-weight:700; color:var(--white); margin-bottom:2rem;}
-    .ia-options { display:flex; flex-direction:column; gap:1.1rem;}
-    .ia-option { cursor:pointer; border-radius:20px; padding:1.1rem 1rem; font-size:1.06rem; background:rgba(0,240,255,.10); border:2px solid transparent; transition:.23s; color:var(--cream); position:relative;}
-    .ia-option:hover, .ia-option.selected { background:linear-gradient(45deg,#00f0ff33,#8b5cf633); color:var(--white); border:2px solid var(--neon-blue); transform:scale(1.03);}
-    .ia-feedback { padding:1.2rem 1rem; background:linear-gradient(45deg,#1B263B,#415A77); border-radius:18px; margin-top:1.8rem;}
-    .ia-btn-continue { margin:1.8rem auto 0; display:block;}
-    @media (max-width:600px){ .ia-question{font-size:1.05rem;}}
+    .ia-progress-bar-wrap {
+      background: rgba(27,38,59,.5);
+      border-radius: 14px;
+      height: 18px;
+      margin-bottom: 1.5rem;
+      overflow: hidden;
+    }
+    .ia-progress-bar {
+      background: linear-gradient(90deg, #00f0ff 0%, #8b5cf6 100%);
+      height: 100%;
+      width: 0;
+      border-radius: 14px;
+      transition: width 0.5s cubic-bezier(.42,0,.58,1);
+      box-shadow: 0 0 10px #0ff2;
+    }
+    .ia-question { font-size:1.3rem; font-weight:700; color:var(--white); margin-bottom:2rem;}
+    .ia-options { display:flex; flex-direction:column; gap:1.1rem; }
+    .ia-option {
+      cursor:pointer; border-radius:20px; padding:1.1rem 1rem; font-size:1.07rem;
+      background:rgba(0,240,255,.10); border:2px solid transparent;
+      transition:.23s; color:var(--cream); position:relative; outline:none;
+      text-align:left; display: flex; align-items:center; gap:0.7rem;
+      box-shadow: 0 2px 8px 0 rgba(0,240,255,0.03);
+    }
+    .ia-option.selected,.ia-option:focus {
+      background:linear-gradient(45deg,#00f0ff33,#8b5cf633); color:var(--white);
+      border:2px solid var(--neon-blue); transform:scale(1.025);
+    }
+    .ia-option.selected::before {
+      content: '✅'; margin-right: 0.7rem; font-size: 1.1em;
+      filter: drop-shadow(0 0 2px #00f0ff);
+    }
+    .ia-option:hover { filter: brightness(1.1);}
+    .ia-navigate { display:flex; justify-content:space-between; gap:1rem; margin-top:2.4rem; }
+    .ia-btn {
+      background: linear-gradient(45deg, var(--neon-blue), var(--neon-purple));
+      color: #fff; border: none; border-radius: 32px;
+      padding: 0.8rem 2.2rem; font-weight:700; font-size:1rem; cursor:pointer;
+      box-shadow:0 2px 12px #00f0ff22; transition:.18s;
+    }
+    .ia-btn[disabled] { opacity:0.5; cursor:not-allowed;}
+    .ia-btn:hover:not([disabled]) { transform:scale(1.045);}
+    .ia-feedback {
+      padding:1.2rem 1rem; background:linear-gradient(45deg,#1B263B,#415A77);
+      border-radius:18px; margin-top:1.8rem; animation:fadeIn .7s;
+    }
+    .ia-feedback h3 { color: #00f0ff;}
+    .ia-step-label {color: var(--light-blue); font-size:0.98rem; margin-bottom:1.2rem;}
+    @media (max-width:500px){
+      .ia-btn { width:100%; }
+      .ia-navigate { flex-direction:column;}
+    }
     /* Noticias */
     .news-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px,1fr)); gap: 2rem;}
     .news-card { background: rgba(27,38,59,.6); border-radius: 26px; padding:2rem 1.5rem; border:1px solid rgba(119,141,169,.16); transition: box-shadow 0.3s, transform 0.2s; overflow:hidden; position:relative; backdrop-filter:blur(8px);}
@@ -229,11 +272,6 @@
     /* Footer */
     .footer { background:var(--dark-navy); padding:3rem 2rem 2rem; text-align:center; border-top:1px solid rgba(119,141,169,.15); margin-top: 4rem;}
     .footer-content { max-width: 1200px; margin: 0 auto;}
-    /* Modal (esqueleto, para futuras integraciones) */
-    .modal { display:none; position:fixed; z-index:10000; left:0; top:0; width:100%; height:100%; background: rgba(13,27,42,0.95); backdrop-filter: blur(5px);}
-    .modal-content { background: var(--navy); margin: 5% auto; padding: 2rem; border-radius: 26px; width: 90%; max-width: 500px; border: 1px solid rgba(119,141,169,.2); position: relative;}
-    .close { color: var(--cream); float: right; font-size: 28px; font-weight: bold; cursor: pointer; position: absolute; right: 1rem; top: 1rem;}
-    .close:hover { color: var(--white); }
   </style>
 </head>
 <body>
@@ -314,12 +352,6 @@
       </form>
       <div id="newsletter-success" style="display:none;color:var(--success-green);margin-top:1rem;">¡Suscripción exitosa! <br> Revisa tu correo para un mensaje especial de bienvenida.</div>
       <div id="newsletter-error" style="display:none;color:red;margin-top:1rem;">Error al suscribirse. Intenta de nuevo.</div>
-      <!-- 
-        Para integración real:
-        - Sustituye el submit JS por tu endpoint de Mailchimp, Buttondown, Brevo o similar (ver README o docs proveedor).
-        - Nunca pongas una API Key privada en el frontend.
-        - El mensaje de bienvenida se encuentra en el JS como variable "newsletterWelcomeHTML"
-      -->
     </section>
     <!-- SOBRE MI -->
     <section class="section" id="sobre-mi">
@@ -432,7 +464,7 @@
     });
 
     // =========================
-    // TEST IA VISUAL Y CHULO
+    // TEST IA VISUAL MEJORADO
     // =========================
     const iaQuestions = [
       {
@@ -463,13 +495,12 @@
         ]
       }
     ];
-    let iaStep = 0, iaAnswers = [];
-    renderIAQuestion();
+
+    let iaStep = 0, iaAnswers = Array(iaQuestions.length).fill(null);
 
     function renderIAQuestion() {
       const block = document.getElementById("test-block");
       if(iaStep >= iaQuestions.length) {
-        // Perfil según respuesta a la 2ª pregunta
         let nivel = "Principiante";
         if(iaAnswers[1] === 1) nivel = "Intermedio";
         if(iaAnswers[1] === 2) nivel = "Avanzado";
@@ -480,69 +511,60 @@
           <p><b>Cursos recomendados:</b></p>
           <ul>`;
         recomendados.slice(0,5).forEach(c=>html+=`<li><a href="${c.url}" target="_blank">${c.nombre}</a> <small>(${c.proveedor})</small></li>`);
-        html += `</ul><a href="#cursos" class="btn btn-primary ia-btn-continue">Ver todos los cursos</a></div>`;
+        html += `</ul><a href="#cursos" class="ia-btn" style="margin-top:1.2rem;">Ver todos los cursos</a></div>`;
         block.innerHTML = html;
         return;
       }
-      let html = `<div class="ia-stepper">`;
-      for(let i=0;i<iaQuestions.length;i++){
-        html += `<span class="ia-step-dot${iaStep===i?' active':''}"></span>`;
-      }
-      html += `</div>`;
-      html += `<div class="ia-question">${iaQuestions[iaStep].q}</div>
+
+      // PROGRESS BAR
+      const pct = Math.round((iaStep)/iaQuestions.length*100);
+      let html = `
+        <div class="ia-step-label">Pregunta ${iaStep+1} de ${iaQuestions.length}</div>
+        <div class="ia-progress-bar-wrap"><div class="ia-progress-bar" style="width:${pct}%;"></div></div>
+        <div class="ia-question">${iaQuestions[iaStep].q}</div>
         <div class="ia-options">`;
       iaQuestions[iaStep].options.forEach((opt, idx)=>{
-        html += `<div class="ia-option" onclick="selectIAOption(${idx})">${opt}</div>`;
+        html += `<div class="ia-option${iaAnswers[iaStep]===idx?' selected':''}" tabindex="0"
+          onclick="selectIAOption(${idx})" onkeydown="if(event.key==='Enter'){selectIAOption(${idx})}">${opt}</div>`;
       });
-      html += `</div>`;
+      html += `</div>
+        <div class="ia-navigate">
+          <button class="ia-btn" onclick="prevIAQuestion()" ${iaStep===0?'disabled':''}>Anterior</button>
+          <button class="ia-btn" onclick="nextIAQuestion()" ${iaAnswers[iaStep]===null?'disabled':''}>
+            ${iaStep===iaQuestions.length-1?'Finalizar':'Siguiente'}
+          </button>
+        </div>
+      `;
       block.innerHTML = html;
-    }
-    function selectIAOption(idx){
-      const opts = document.querySelectorAll('.ia-option');
-      opts.forEach(e=>e.classList.remove('selected'));
-      opts[idx].classList.add('selected');
+
+      // Accesibilidad: focus en seleccionado
       setTimeout(()=>{
-        iaAnswers[iaStep] = idx;
-        iaStep++;
-        renderIAQuestion();
-      }, 350);
+        const opts = document.querySelectorAll('.ia-option');
+        if(iaAnswers[iaStep]!==null) opts[iaAnswers[iaStep]].focus();
+      },50);
     }
 
-    // ===================
-    // NEWSLETTER MENSAJE
-    // ===================
-    // Mensaje HTML que puedes usar en tu proveedor de email
-    const newsletterWelcomeHTML = `
-    <div style="max-width:520px;margin:2rem auto;background:#fff;border-radius:18px;box-shadow:0 8px 40px #00f0ff26;padding:2.5rem;font-family:'Segoe UI',Arial,sans-serif;color:#1B263B;">
-      <div style="font-size:2.1rem;font-weight:bold;background:linear-gradient(45deg,#00f0ff,#8b5cf6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">NeuroFutura</div>
-      <h1>¡Gracias por suscribirte!</h1>
-      <p>
-        ¡Bienvenido/a a la comunidad <span style="color:#8b5cf6;font-weight:bold;">NeuroFutura</span>! 🚀<br>
-        A partir de ahora recibirás <b>cada semana</b> los cursos más recomendados, novedades, tendencias y recursos exclusivos de <span style="color:#8b5cf6;font-weight:bold;">Inteligencia Artificial</span> y <span style="color:#8b5cf6;font-weight:bold;">Automatización</span>.
-      </p>
-      <ul>
-        <li>🎓 <b>Cursos seleccionados</b> según tu perfil</li>
-        <li>📰 <b>Noticias y análisis en tiempo real</b></li>
-        <li>💼 Recomendaciones de <b>certificaciones y recursos premium</b></li>
-        <li>🌐 Comunidad y acceso a eventos exclusivos</li>
-      </ul>
-      <p style="margin-top:2rem;">
-        Si tienes cualquier duda o sugerencia, responde a este email o escríbenos a <a href="mailto:luismorenoglobal@gmail.com">luismorenoglobal@gmail.com</a>.
-      </p>
-      <a href="https://lu1smoreno.github.io/ai/#cursos" style="display:inline-block;margin:2rem 0 0;padding:1rem 2rem;background:linear-gradient(45deg,#00f0ff,#8b5cf6);color:#fff;border-radius:32px;font-weight:bold;text-decoration:none;">¡Explorar los cursos ahora!</a>
-      <p style="margin-top:2.5rem;font-size:0.93rem;color:#778DA9;">
-        ¿No esperabas este email? Puedes darte de baja en cualquier momento.
-      </p>
-    </div>
-    `;
+    function selectIAOption(idx){
+      iaAnswers[iaStep] = idx;
+      renderIAQuestion();
+    }
+    function prevIAQuestion(){
+      if(iaStep>0) iaStep--;
+      renderIAQuestion();
+    }
+    function nextIAQuestion(){
+      if(iaAnswers[iaStep]!==null && iaStep<iaQuestions.length) {
+        iaStep++;
+        renderIAQuestion();
+      }
+    }
+    renderIAQuestion();
 
     // ===============
     // NEWSLETTER DEMO
     // ===============
     document.getElementById('newsletter-form').addEventListener('submit', function(e){
       e.preventDefault();
-      // Aquí puedes hacer fetch/post a tu API (Mailchimp, Buttondown, etc)
-      // También puedes enviar el newsletterWelcomeHTML como cuerpo o template del email.
       document.getElementById('newsletter-success').style.display = "block";
       document.getElementById('newsletter-error').style.display = "none";
       setTimeout(()=>{ document.getElementById('newsletter-success').style.display = "none"; }, 4000);
