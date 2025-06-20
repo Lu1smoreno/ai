@@ -118,9 +118,6 @@
       justify-content: center;
       margin: 2.5rem 0;
     }
-    .news-premium-btn .news-image {
-      font-size:2.6rem;margin-bottom:1.2rem;color:var(--neon-blue);text-shadow:0 0 8px #00f0ff88;
-    }
     .premium-news-desc {
       color: var(--light-blue);
       font-size: 1rem;
@@ -504,9 +501,7 @@
     </div>
   </footer>
   <script>
-    // === CURSOS Y FILTRO ===
-    // (Tu lógica de cursos original aquí, igual que en tu último archivo)
-    // ... [ OMITIDO POR ESPACIO, PEGA TU BLOQUE DE JS DE CURSOS/TEST IA/NEWSLETTER SI LO TENÍAS ] ...
+    // ... tu array de cursos, renderCursos, test IA ... (COPIA TU LÓGICA AQUÍ, OMITIDO POR ESPACIO)
 
     // ----------- NOTICIAS PUBLICAS/PREMIUM -----------
     let usuarioLogueado = false;
@@ -519,14 +514,17 @@
             <h2 class="user-news-title">📰 Noticias IA y Tecnología (Premium)</h2>
             <div class="user-news-grid" id="user-news-list"></div>
           </div>
+          <div style="text-align:center;">
+            <button class="btn btn-logout" id="logout-btn-2" style="margin-top:2rem;">Cerrar sesión</button>
+          </div>
         `;
         renderUserNews();
+        document.getElementById('logout-btn-2').onclick = desactivarModoUsuario;
       } else {
         newsList.innerHTML = `
           <div class="news-premium-btn">
-            <div class="news-image">🔒</div>
             <button onclick="document.getElementById('login-btn').click()" class="btn btn-premium-news">
-              Noticias premium solo para usuarios registrados
+              🔒 Noticias premium solo para usuarios registrados
             </button>
             <div class="premium-news-desc">Regístrate o inicia sesión para acceder al feed de noticias en tiempo real sobre IA y tecnología.</div>
           </div>
@@ -599,11 +597,10 @@
       setTimeout(activarModoUsuario, 400);
     }
 
-    // PEGA AQUÍ TU LÓGICA DE CURSOS, TEST IA, NEWSLETTER, ETC (SIN CAMBIOS)
-    // No se repite aquí por espacio, pero no pierdas tu lógica original
+    // ----------- TU LÓGICA DE CURSOS, TEST, NEWSLETTER, ETC (COPIA/PEGA AQUÍ) -----------
 
     // Inicialización
-    window.onload = function() { renderCursos(); renderNoticiasPublicas(); /* ...tu inicialización original... */ }
+    window.onload = function() { renderCursos(); renderNoticiasPublicas(); }
   </script>
 </body>
 </html>
