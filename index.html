@@ -359,6 +359,7 @@
         <li><a href="#test">Test IA</a></li>
         <li><a href="#noticias">Noticias</a></li>
         <li><a href="#sobre-mi">Sobre Mí</a></li>
+        <li id="profile-link" style="display:none;"><a href="#perfil" onclick="mostrarPerfil()">Perfil</a></li>
       </ul>
       <div class="auth-buttons" id="auth-buttons">
         <a href="#" class="btn btn-secondary btn-small" id="login-btn">Acceso</a>
@@ -438,6 +439,30 @@
         </div>
       </div>
     </section>
+    <!-- PERFIL DE USUARIO -->
+<section class="section" id="perfil" style="display:none;">
+  <h2 class="section-title">Tu Perfil</h2>
+  <form id="perfil-form" style="max-width:400px;margin:0 auto;">
+    <div class="form-group">
+      <label class="form-label">Nombre:</label>
+      <input type="text" class="form-input" id="perfil-nombre" placeholder="Nombre">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Apellido:</label>
+      <input type="text" class="form-input" id="perfil-apellido" placeholder="Apellido (opcional)">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Ocupación:</label>
+      <input type="text" class="form-input" id="perfil-ocupacion" placeholder="Profesión/Estudios">
+    </div>
+    <button type="button" class="btn btn-primary" onclick="guardarPerfilUsuario()">Guardar Perfil</button>
+  </form>
+  <hr style="margin:2rem 0;">
+  <h3 style="color:var(--azul);text-align:center;">Cursos que te interesan</h3>
+  <ul id="perfil-cursos-interes" style="max-width:650px;margin:1rem auto 2.5rem;"></ul>
+  <h3 style="color:var(--naranja);text-align:center;">Recomendados para ti</h3>
+  <ul id="perfil-cursos-recomendados" style="max-width:650px;margin:1rem auto;"></ul>
+</section>
   </main>
   <!-- MODALS -->
   <div id="loginModal" class="modal">
@@ -525,24 +550,27 @@
         return;
       }
       cursosFiltrados.forEach(curso => {
-        lista.innerHTML += `
-          <div class="course-card">
-            <div class="course-header">
-              <div class="course-badges">
-                <span class="course-badge badge-level">${curso.nivel}</span>
-                <span class="course-badge badge-${curso.tipo.toLowerCase()}">${curso.tipo}</span>
-                ${curso.popular ? '<span class="course-badge badge-popular">Popular</span>' : ""}
-              </div>
-            </div>
-            <div class="course-title">${curso.nombre}</div>
-            <div class="course-provider">${curso.proveedor}</div>
-            <div class="course-desc">${curso.descripcion}</div>
-            <div class="course-footer">
-              <span class="course-price">${curso.duracion}</span>
-              <a href="${curso.url}" class="btn btn-primary" target="_blank">Ver Curso</a>
-            </div>
-          </div>
-        `;
+      lista.innerHTML += `
+  <div class="course-card">
+    <div class="course-header">
+      <div class="course-badges">
+        <span class="course-badge badge-level">${curso.nivel}</span>
+        <span class="course-badge badge-${curso.tipo.toLowerCase()}">${curso.tipo}</span>
+        ${curso.popular ? '<span class="course-badge badge-popular">Popular</span>' : ""}
+      </div>
+      <button class="btn btn-secondary btn-small" onclick="toggleCursoInteres('${curso.nombre.replace(/'/g, "\\'")}')">
+        <span id="interesado-${curso.nombre.replace(/\W/g, '')}">🤍</span>
+      </button>
+    </div>
+    <div class="course-title">${curso.nombre}</div>
+    <div class="course-provider">${curso.proveedor}</div>
+    <div class="course-desc">${curso.descripcion}</div>
+    <div class="course-footer">
+      <span class="course-price">${curso.duracion}</span>
+      <a href="${curso.url}" class="btn btn-primary" target="_blank">Ver Curso</a>
+    </div>
+  </div>
+`;
       });
     }
     document.getElementById('course-search').addEventListener('input', e => {
@@ -556,6 +584,11 @@
         this.classList.add('active');
         renderCursos(this.dataset.filter, document.getElementById('course-search').value);
       });
+      const favoritos = JSON.parse(localStorage.getItem('cursosInteres') || '[]');
+favoritos.forEach(nombre => {
+  const icon = document.getElementById('interesado-' + nombre.replace(/\W/g, ''));
+  if(icon) icon.textContent = '❤️';
+});
     });
     // ==== TEST IA ====
     const iaQuestions = [
@@ -682,18 +715,20 @@
       });
       document.getElementById('user-news-list').innerHTML = html;
     }
-    function activarModoUsuario() {
-      usuarioLogueado = true;
-      document.getElementById('auth-buttons').style.display = 'none';
-      document.getElementById('logout-btn').style.display = '';
-      renderNoticiasPublicas();
-    }
-    function desactivarModoUsuario() {
-      usuarioLogueado = false;
-      document.getElementById('auth-buttons').style.display = '';
-      document.getElementById('logout-btn').style.display = 'none';
-      renderNoticiasPublicas();
-    }
+ function activarModoUsuario() {
+  usuarioLogueado = true;
+  document.getElementById('auth-buttons').style.display = 'none';
+  document.getElementById('logout-btn').style.display = '';
+  document.getElementById('profile-link').style.display = '';
+  renderNoticiasPublicas();
+}
+function desactivarModoUsuario() {
+  usuarioLogueado = false;
+  document.getElementById('auth-buttons').style.display = '';
+  document.getElementById('logout-btn').style.display = 'none';
+  document.getElementById('profile-link').style.display = 'none';
+  renderNoticiasPublicas();
+}
     document.getElementById('logout-btn').onclick = desactivarModoUsuario;
     // ----------- MODALS LOGIN/REGISTER -----------
     function showModal(id) {
@@ -722,8 +757,85 @@
       closeModal('registerModal');
       setTimeout(activarModoUsuario, 400);
     }
+    // ----- GESTIÓN PERFIL USUARIO -----
+function mostrarPerfil() {
+  document.querySelectorAll('main > section').forEach(s => s.style.display = 'none');
+  document.getElementById('perfil').style.display = '';
+  cargarPerfilUsuario();
+  renderCursosInteresados();
+  renderCursosRecomendados();
+  window.scrollTo(0,0);
+}
+
+function guardarPerfilUsuario() {
+  const perfil = {
+    nombre: document.getElementById('perfil-nombre').value,
+    apellido: document.getElementById('perfil-apellido').value,
+    ocupacion: document.getElementById('perfil-ocupacion').value
+  };
+  localStorage.setItem('perfilUsuario', JSON.stringify(perfil));
+  alert('¡Perfil guardado!');
+}
+
+function cargarPerfilUsuario() {
+  const perfil = JSON.parse(localStorage.getItem('perfilUsuario') || '{}');
+  document.getElementById('perfil-nombre').value = perfil.nombre || '';
+  document.getElementById('perfil-apellido').value = perfil.apellido || '';
+  document.getElementById('perfil-ocupacion').value = perfil.ocupacion || '';
+}
+
+// ----- GESTIÓN CURSOS INTERESANTES -----
+function toggleCursoInteres(nombre) {
+  let favoritos = JSON.parse(localStorage.getItem('cursosInteres') || '[]');
+  if(favoritos.includes(nombre)) {
+    favoritos = favoritos.filter(n => n !== nombre);
+  } else {
+    favoritos.push(nombre);
+  }
+  localStorage.setItem('cursosInteres', JSON.stringify(favoritos));
+  renderCursos(document.querySelector('.filter-btn.active').dataset.filter, document.getElementById('course-search').value);
+}
+
+function renderCursosInteresados() {
+  const favoritos = JSON.parse(localStorage.getItem('cursosInteres') || '[]');
+  const ul = document.getElementById('perfil-cursos-interes');
+  if(!favoritos.length) {
+    ul.innerHTML = "<li style='color:#ccc'>Aún no tienes cursos marcados como interesantes.</li>";
+    return;
+  }
+  ul.innerHTML = '';
+  favoritos.forEach(nombre => {
+    const curso = cursos.find(c => c.nombre === nombre);
+    if(curso) {
+      ul.innerHTML += `<li>
+        <a href="${curso.url}" target="_blank">${curso.nombre}</a> <small>(${curso.proveedor})</small>
+      </li>`;
+    }
+  });
+}
+
+function renderCursosRecomendados() {
+  // Ejemplo: recomienda los 3 cursos populares que no estén ya en favoritos
+  const favoritos = JSON.parse(localStorage.getItem('cursosInteres') || '[]');
+  const recomendados = cursos.filter(c=>c.popular && !favoritos.includes(c.nombre)).slice(0,3);
+  const ul = document.getElementById('perfil-cursos-recomendados');
+  if(!recomendados.length) {
+    ul.innerHTML = "<li style='color:#ccc'>¡Ya has marcado todos los cursos recomendados!</li>";
+    return;
+  }
+  ul.innerHTML = '';
+  recomendados.forEach(curso => {
+    ul.innerHTML += `<li>
+      <a href="${curso.url}" target="_blank">${curso.nombre}</a> <small>(${curso.proveedor})</small>
+    </li>`;
+  });
+}
     // ==== INICIALIZACIÓN ====
-    window.onload = function() { renderCursos(); renderIAQuestion(); renderNoticiasPublicas(); }
-  </script>
+window.onload = function() {
+  renderCursos();
+  renderIAQuestion();
+  renderNoticiasPublicas();
+  document.getElementById('profile-link').style.display = 'none';
+}  </script>
 </body>
 </html>
