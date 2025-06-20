@@ -16,6 +16,14 @@
       --success-green: #10b981;
       --warning-orange: #f59e0b;
     }
+    .corazon-animado {
+  animation: pop 0.33s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes pop {
+  0% { transform: scale(1);}
+  60% { transform: scale(1.6);}
+  100% { transform: scale(1);}
+}
     * { box-sizing: border-box; }
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -349,17 +357,34 @@
     .footer a { color: var(--naranja) !important;}
   </style>
 </head>
+  <div id="msg-favoritos" style="
+  display:none;
+  position:fixed;
+  left:50%;top:3.5rem;
+  transform:translateX(-50%);
+  background: var(--azul-profundo);
+  color: var(--blanco);
+  border-radius: 18px;
+  padding: 1.1rem 2.2rem;
+  font-size: 1.1rem;
+  box-shadow:0 2px 18px #00A2FF99;
+  z-index:99999;
+  opacity:0.97;
+  border:2px solid var(--naranja);
+  font-weight:700;
+  text-align:center;
+"></div>
 <body>
   <div class="animated-bg"></div>
   <header class="header">
     <nav class="nav">
       <a href="#" class="logo">NeuroFutura</a>
       <ul class="nav-links" id="main-links">
-        <li><a href="#cursos">Cursos</a></li>
-        <li><a href="#test">Test IA</a></li>
-        <li><a href="#noticias">Noticias</a></li>
-        <li><a href="#sobre-mi">Sobre Mí</a></li>
-        <li id="profile-link" style="display:none;"><a href="#perfil" onclick="mostrarPerfil()">Perfil</a></li>
+      <li><a href="#cursos" onclick="mostrarSeccion('cursos');return false;">Cursos</a></li>
+<li><a href="#test" onclick="mostrarSeccion('test');return false;">Test IA</a></li>
+<li><a href="#noticias" onclick="mostrarSeccion('noticias');return false;">Noticias</a></li>
+<li><a href="#sobre-mi" onclick="mostrarSeccion('sobre-mi');return false;">Sobre Mí</a></li>
+<li id="profile-link" style="display:none;"><a href="#perfil" onclick="mostrarSeccion('perfil');return false;">Perfil</a></li>
       </ul>
       <div class="auth-buttons" id="auth-buttons">
         <a href="#" class="btn btn-secondary btn-small" id="login-btn">Acceso</a>
@@ -549,29 +574,34 @@
         lista.innerHTML = "<p style='color:#eee; text-align:center;'>No se encontraron cursos para ese filtro.</p>";
         return;
       }
-      cursosFiltrados.forEach(curso => {
-      lista.innerHTML += `
-  <div class="course-card">
-    <div class="course-header">
-      <div class="course-badges">
-        <span class="course-badge badge-level">${curso.nivel}</span>
-        <span class="course-badge badge-${curso.tipo.toLowerCase()}">${curso.tipo}</span>
-        ${curso.popular ? '<span class="course-badge badge-popular">Popular</span>' : ""}
+   const favoritos = JSON.parse(localStorage.getItem('cursosInteres') || '[]');
+
+cursosFiltrados.forEach(curso => {
+  const idCorazon = 'interesado-' + curso.nombre.replace(/\W/g, '');
+  const esFavorito = favoritos.includes(curso.nombre);
+
+  lista.innerHTML += `
+    <div class="course-card">
+      <div class="course-header">
+        <div class="course-badges">
+          <span class="course-badge badge-level">${curso.nivel}</span>
+          <span class="course-badge badge-${curso.tipo.toLowerCase()}">${curso.tipo}</span>
+          ${curso.popular ? '<span class="course-badge badge-popular">Popular</span>' : ""}
+        </div>
+        <button class="btn btn-secondary btn-small" onclick="toggleCursoInteres('${curso.nombre.replace(/'/g, "\\'")}')" title="${esFavorito ? 'Eliminar de favoritos' : 'Marcar como favorito'}">
+          <span id="${idCorazon}">${esFavorito ? '❤️' : '🤍'}</span>
+        </button>
       </div>
-      <button class="btn btn-secondary btn-small" onclick="toggleCursoInteres('${curso.nombre.replace(/'/g, "\\'")}')">
-        <span id="interesado-${curso.nombre.replace(/\W/g, '')}">🤍</span>
-      </button>
+      <div class="course-title">${curso.nombre}</div>
+      <div class="course-provider">${curso.proveedor}</div>
+      <div class="course-desc">${curso.descripcion}</div>
+      <div class="course-footer">
+        <span class="course-price">${curso.duracion}</span>
+        <a href="${curso.url}" class="btn btn-primary" target="_blank">Ver Curso</a>
+      </div>
     </div>
-    <div class="course-title">${curso.nombre}</div>
-    <div class="course-provider">${curso.proveedor}</div>
-    <div class="course-desc">${curso.descripcion}</div>
-    <div class="course-footer">
-      <span class="course-price">${curso.duracion}</span>
-      <a href="${curso.url}" class="btn btn-primary" target="_blank">Ver Curso</a>
-    </div>
-  </div>
-`;
-      });
+  `;
+});
     }
     document.getElementById('course-search').addEventListener('input', e => {
       const search = e.target.value;
@@ -787,15 +817,40 @@ function cargarPerfilUsuario() {
 // ----- GESTIÓN CURSOS INTERESANTES -----
 function toggleCursoInteres(nombre) {
   let favoritos = JSON.parse(localStorage.getItem('cursosInteres') || '[]');
+  let accion;
   if(favoritos.includes(nombre)) {
     favoritos = favoritos.filter(n => n !== nombre);
+    accion = 'eliminado';
   } else {
     favoritos.push(nombre);
+    accion = 'añadido';
   }
   localStorage.setItem('cursosInteres', JSON.stringify(favoritos));
   renderCursos(document.querySelector('.filter-btn.active').dataset.filter, document.getElementById('course-search').value);
+
+  // Animación del corazón
+  setTimeout(() => {
+    const icon = document.getElementById('interesado-' + nombre.replace(/\W/g, ''));
+    if(icon) {
+      icon.classList.add('corazon-animado');
+      setTimeout(() => icon.classList.remove('corazon-animado'), 350);
+    }
+  }, 80);
+
+  // Mensaje flotante
+  mostrarMsgFavoritos(accion === 'añadido'
+    ? '¡Curso añadido a tus favoritos!'
+    : 'Curso eliminado de favoritos');
 }
 
+function mostrarMsgFavoritos(msg) {
+  const el = document.getElementById('msg-favoritos');
+  el.textContent = msg;
+  el.style.display = 'block';
+  el.style.opacity = 0.97;
+  setTimeout(()=>{ el.style.opacity = 0.1; }, 1200);
+  setTimeout(()=>{ el.style.display = 'none'; el.style.opacity = 0.97; }, 1700);
+}
 function renderCursosInteresados() {
   const favoritos = JSON.parse(localStorage.getItem('cursosInteres') || '[]');
   const ul = document.getElementById('perfil-cursos-interes');
@@ -813,7 +868,24 @@ function renderCursosInteresados() {
     }
   });
 }
-
+function mostrarSeccion(id) {
+  // Oculta todas las secciones del main y el hero
+  document.querySelectorAll('main > section').forEach(s => s.style.display = 'none');
+  if(document.getElementById('hero')) document.getElementById('hero').style.display = 'none';
+  // Muestra la sección seleccionada
+  document.getElementById(id).style.display = '';
+  // Si es perfil, recarga datos del perfil y favoritos
+  if(id === 'perfil') {
+    cargarPerfilUsuario();
+    renderCursosInteresados();
+    renderCursosRecomendados();
+  }
+  // Si es cursos, muestra también el hero (si lo deseas)
+  if(id === 'cursos' && document.getElementById('hero')) {
+    document.getElementById('hero').style.display = '';
+  }
+  window.scrollTo(0,0);
+}
 function renderCursosRecomendados() {
   // Ejemplo: recomienda los 3 cursos populares que no estén ya en favoritos
   const favoritos = JSON.parse(localStorage.getItem('cursosInteres') || '[]');
