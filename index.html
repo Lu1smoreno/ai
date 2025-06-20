@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NeuroFutura - El Futuro del Aprendizaje en IA</title>
+  <style>
+    :root {
+      --dark-navy: #0D1B2A;
+      --navy: #1B263B;
+      --blue-gray: #415A77;
+      --light-blue: #778DA9;
+      --cream: #E0E1DD;
+      --white: #fff;
+      --black: #000;
+      --neon-blue: #00f0ff;
+      --neon-purple: #8b5cf6;
+      --neon-pink: #ec4899;
+      --success-green: #10b981;
+      --warning-orange: #f59e0b;
+    }
+    
+    * { box-sizing: border-box; }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      background: var(--dark-navy);
+      color: var(--cream);
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+    
+    .animated-bg {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background: linear-gradient(135deg, var(--dark-navy), var(--navy) 50%, var(--blue-gray) 100%);
+    }
+    
+    /* HEADER */
+    header.header {
+      width: 100%; padding: 1.2rem 2rem; background: rgba(13,27,42,0.95); position: fixed; top: 0; left: 0; z-index: 1000;
+      border-bottom:1px solid rgba(119,141,169,.17); backdrop-filter: blur(10px);
+    }
+    
+    nav.nav { max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+    
+    .logo {
+      font-size: 2rem; font-weight: 900; background: linear-gradient(45deg, var(--neon-blue), var(--neon-purple)); 
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-decoration: none;
+    }
+    
+    ul.nav-links { display: flex; list-style: none; gap: 2rem; margin: 0; padding: 0; }
+    
+    .nav-links a {
+      color: var(--cream); text-decoration: none; transition: .2s; padding: 0.5rem 1rem; border-radius: 20px;
+      position: relative;
+    }
+    
+    .nav-links a:hover { color: var(--white); background: rgba(0,240,255,.09);}
+    
+    .auth-buttons { display: flex; gap: 1rem; }
+    
+    /* BUTTONS */
+    .btn {
+      padding:1rem 2.2rem; border:none; border-radius:2em; cursor:pointer; font-weight:600; font-size:1.08rem;
+      transition:.25s; text-decoration:none; margin-bottom:.5rem;
+      position:relative; overflow:hidden; display:inline-block;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(45deg, var(--neon-blue), var(--neon-purple));
+      color: var(--white);
+      box-shadow: 0 5px 20px rgba(0,240,255,.25);
+    }
+    
+    .btn-primary:hover { transform:translateY(-2px) scale(1.04); box-shadow: 0 8px 30px rgba(0,240,255,.4); }
+    
+    .btn-secondary {
+      background: transparent;
+      color: var(--cream);
+      border: 2px solid var(--neon-blue);
+      box-shadow: 0 0 12px rgba(0, 240, 255, 0.08);
+    }
+    
+    .btn-secondary:hover { background: rgba(0,240,255,.07); color: var(--white); }
+    
+    .btn-small { padding: 0.5rem 1.2rem; font-size: 0.9rem; }
+    
+    /* HERO SECTION */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      flex-direction: column;
+      gap: 2rem;
+      position: relative;
+      padding: 0 2rem;
+    }
+    
+    .hero-badge {
+      display: inline-block;
+      background: linear-gradient(45deg, var(--neon-pink), var(--neon-purple));
+      color: var(--white);
+      padding: 0.5rem 1.5rem;
+      border-radius: 25px;
+      font-weight: 600;
+      margin-bottom: 1.2rem;
+      animation: bounce 2s infinite;
+    }
+    
+    @keyframes bounce {
+      0%,100%{transform:translateY(0);} 50%{transform:translateY(-10px);}
+    }
+    
+    .hero-title {
+      font-size: 3.2rem;
+      font-weight: 900;
+      background: linear-gradient(45deg, var(--white), var(--neon-blue), var(--neon-purple));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      margin: 0;
+      animation: titleglow 3s ease-in-out infinite alternate;
+    }
+    
+    @keyframes titleglow {
+      0% { filter: drop-shadow(0 0 16px rgba(0,240,255,.4)); }
+      100% { filter: drop-shadow(0 0 32px rgba(139,92,246,.6)); }
+    }
+    
+    .hero-subtitle {
+      font-size: 1.2rem;
+      color: var(--cream);
+      opacity: .95;
+      margin-bottom: 2rem;
+      line-height: 1.5;
+      max-width: 800px;
+    }
+    
+    .hero-cta {
+      display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap;
+    }
+    
+    /* MAIN CONTENT */
+    main { margin-top: 6rem; padding: 2rem; }
+    
+    .section {
+      max-width: 1400px;
+      margin: 4rem auto;
+      padding: 2rem 0;
+    }
+    
+    .section-title { 
+      text-align: center; font-size: 2.2rem; 
+      background: linear-gradient(45deg, var(--white), var(--neon-blue)); 
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; 
+      font-weight: 800; margin-bottom: 1rem;
+    }
+    
+    .section-subtitle { 
+      text-align:center; color:var(--light-blue); margin-bottom:2.5rem; font-size:1.1rem;
+      max-width: 600px; margin-left: auto; margin-right: auto;
+    }
+    
+    /* COURSE FILTERS */
+    .course-filters {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+    
+    .filter-btn {
+      padding: 0.7rem 1.5rem;
+      background: rgba(27,38,59,.6);
+      border: 1px solid rgba(119,141,169,.2);
+      color: var(--cream);
+      border-radius: 25px;
+      cursor: pointer;
+      transition: .3s;
+      font-weight: 500;
+    }
+    
+    .filter-btn.active, .filter-btn:hover {
+      background: linear-gradient(45deg, var(--neon-blue), var(--neon-purple));
+      color: var(--white);
+      border-color: transparent;
+    }
+    
+    /* COURSE GRID */
+    .courses-grid {
+      display: grid; 
+      grid-template-columns: repeat(auto-fit, minmax(350px,1fr)); 
+      gap: 2rem; 
+      margin-bottom: 2rem;
+    }
+    
+    .course-card {
+      background: rgba(27,38,59,.6); 
+      border-radius: 26px; 
+      padding:2rem 1.5rem; 
+      border:1px solid rgba(119,141,169,.16);
+      transition:all .33s; 
+      overflow:hidden; 
+      position:relative; 
+      backdrop-filter:blur(8px);
+      height: fit-content;
+    }
+    
+    .course-card:hover {
+      transform: translateY(-8px) scale(1.015);
+      border-color: var(--neon-blue);
+      box-shadow: 0 15px 40px rgba(0,240,255,.15);
+    }
+    
+    .course-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1rem;
+    }
+    
+    .course-badges {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    
+    .course-badge {
+      padding: 0.3rem 1rem; 
+      border-radius: 20px; 
+      font-size: 0.8rem; 
+      font-weight: bold;
+      color: var(--white);
+    }
+    
+    .badge-popular { background: linear-gradient(45deg, var(--neon-pink), var(--neon-purple)); }
+    .badge-free { background: var(--success-green); }
+    .badge-premium { background: var(--warning-orange); }
+    .badge-level { background: rgba(0,240,255,.3); color: var(--neon-blue); }
+    
+    .course-provider {
+      font-size: 0.9rem;
+      color: var(--light-blue);
+      margin-bottom: 0.5rem;
+    }
+    
+    .course-title { 
+      font-size:1.3rem; 
+      color:var(--white); 
+      font-weight:700;
+      margin-bottom: 1rem;
+      line-height: 1.3;
+    }
+    
+    .course-desc { 
+      color: var(--cream); 
+      margin-bottom: 1.5rem; 
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+    
+    .course-stats {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      font-size: 0.9rem;
+      color: var(--light-blue);
+    }
+    
+    .course-footer { 
+      display:flex; 
+      justify-content:space-between; 
+      align-items:center;
+      gap: 1rem;
+    }
+    
+    .course-price {
+      font-weight: bold;
+      color: var(--neon-blue);
+    }
+    
+    /* TEST SECTION */
+    .test-card { 
+      max-width: 500px; 
+      margin: 2rem auto; 
+      background:rgba(27,38,59,.7); 
+      border-radius:26px; 
+      border:1px solid rgba(119,141,169,.12); 
+      padding:2.5rem 2rem;
+      box-shadow: 0 0 25px 0 rgba(0,240,255,.07); 
+      text-align:center;
+    }
+    
+    .question h3 {
+      color: var(--white);
+      margin-bottom: 1.5rem;
+      font-size: 1.3rem;
+    }
+    
+    .option { 
+      background: rgba(0,240,255,.08); 
+      color:var(--cream); 
+      border-radius:18px; 
+      padding: 1rem 1.5rem; 
+      margin: 0.7rem 0;
+      cursor:pointer; 
+      transition:.22s; 
+      display:block; 
+      width:100%;
+      border: 1px solid transparent;
+    }
+    
+    .option:hover { 
+      background: rgba(0,240,255,.16); 
+      color:var(--white);
+      border-color: var(--neon-blue);
+      transform: translateX(5px);
+    }
+    
+    .test-result {
+      background: linear-gradient(135deg, var(--navy), var(--blue-gray));
+      padding: 2rem;
+      border-radius: 20px;
+      margin-top: 2rem;
+    }
+    
+    .recommended-courses {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+    
+    /* NEWS SECTION */
+    .news-grid {
+      display: grid; 
+      grid-template-columns: repeat(auto-fit, minmax(350px,1fr)); 
+      gap: 2rem;
+    }
+    
+    .news-card {
+      background: rgba(27,38,59,.6); 
+      border-radius: 26px; 
+      padding:2rem 1.5rem; 
+      border:1px solid rgba(119,141,169,.16);
+      transition:all .33s; 
+      overflow:hidden; 
+      position:relative; 
+      backdrop-filter:blur(8px);
+    }
+    
+    .news-card:hover {
+      transform: translateY(-8px) scale(1.015);
+      border-color: var(--neon-blue);
+      box-shadow: 0 15px 40px rgba(0,240,255,.09);
+    }
+    
+    .news-image {
+      height: 120px;
+      background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
+      display:flex; 
+      align-items:center; 
+      justify-content:center; 
+      font-size:2.7rem; 
+      margin-bottom:1rem; 
+      border-radius:12px;
+    }
+    
+    .news-meta {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+      font-size: 0.9rem;
+      color: var(--light-blue);
+    }
+    
+    .news-title {
+      color: var(--white);
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+    
+    .news-excerpt {
+      color: var(--cream);
+      margin-bottom: 1rem;
+      line-height: 1.5;
+    }
+    
+    /* NEWSLETTER */
+    .newsletter-form { 
+      max-width:500px; 
+      margin:1.5rem auto 0; 
+      display:flex; 
+      gap:1rem; 
+      background:rgba(27,38,59,.7);
+      padding:0.8rem; 
+      border-radius:50px; 
+      border:1px solid rgba(0,240,255,.15);
+    }
+    
+    .newsletter-input { 
+      flex:1; 
+      padding:0.9rem 1.6rem; 
+      border:none; 
+      border-radius:50px; 
+      background:transparent; 
+      color:var(--white);
+      font-size: 1rem;
+    }
+    
+    .newsletter-input::placeholder { color:rgba(224,225,221,0.6);}
+    .newsletter-input:focus { outline:none; background:rgba(0,240,255,.10);}
+    
+    /* MODAL */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 10000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(13,27,42,0.95);
+      backdrop-filter: blur(5px);
+    }
+    
+    .modal-content {
+      background: var(--navy);
+      margin: 5% auto;
+      padding: 2rem;
+      border-radius: 26px;
+      width: 90%;
+      max-width: 500px;
+      border: 1px solid rgba(119,141,169,.2);
+      position: relative;
+    }
+    
+    .close {
+      color: var(--cream);
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+      position: absolute;
+      right: 1rem;
+      top: 1rem;
+    }
+    
+    .close:hover { color: var(--white); }
+    
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    
+    .form-label {
+      display: block;
+      color: var(--cream);
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+    }
+    
+    .form-input {
+      width: 100%;
+      padding: 0.8rem 1rem;
+      border: 1px solid rgba(119,141,169,.3);
+      border-radius: 10px;
+      background: rgba(27,38,59,.6);
+      color: var(--white);
+      font-size: 1rem;
+    }
+    
+    .form-input:focus {
+      outline: none;
+      border-color: var(--neon-blue);
+      background: rgba(27,38,59,.8);
+    }
+    
+    /* SEARCH */
+    .search-container {
+      max-width: 600px;
+      margin: 0 auto 2rem;
+      position: relative;
+    }
+    
+    .search-input {
+      width: 100%;
+      padding: 1rem 1.5rem;
+      border: 1px solid rgba(119,141,169,.3);
+      border-radius: 50px;
+      background: rgba(27,38,59,.6);
+      color: var(--white);
+      font-size: 1rem;
+    }
+    
+    .search-input:focus {
+      outline: none;
+      border-color: var(--neon-blue);
+      box-shadow: 0 0 20px rgba(0,240,255,.2);
+    }
+    
+    /* DASHBOARD */
+    .dashboard {
+      display: none;
+    }
+    
+    .user-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    
+    .stat-card {
+      background: rgba(27,38,59,.6);
+      padding: 1.5rem;
+      border-radius: 20px;
+      text-align: center;
+      border: 1px solid rgba(119,141,169,.16);
+    }
+    
+    .stat-number {
+      font-size: 2rem;
+      font-weight: bold;
+      color: var(--neon-blue);
+    }
+    
+    .stat-label {
+      color: var(--cream);
+      margin-top: 0.5rem;
+    }
+    
+    /* FOOTER */
+    .footer {
+      background:var(--dark-navy);
+      padding:3rem 2rem 2rem;
+      text-align:center;
+      border-top:1px solid rgba(119,141,169,.15);
+      margin-top: 4rem;
+    }
+    
+    .footer-content {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+    
+    .footer-links a {
+      color: var(--light-blue);
+      text-decoration: none;
+      transition: .2s;
+    }
+    
+    .footer-links a:hover {
+      color: var(--neon-blue);
+    }
+    
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+      .hero-title { font-size: 2.4rem; }
+      .section-title { font-size: 1.8rem;}
+      .courses-grid, .news-grid { grid-template-columns: 1fr; }
+      header.header { padding: 0.8rem 1rem;}
+      .nav-links { display: none; }
+      .hero-cta { flex-direction: column; align-items: center; }
+      .course-filters { justify-content: flex-start; overflow-x: auto; }
+      main { padding: 1rem; }
+      .newsletter-form { flex-direction: column; }
+    }
+    
+    /* ANIMATIONS */
+    .fade-in {
+      animation: fadeIn 0.6s ease-in;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .pulse {
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(0, 240, 255, 0.4); }
+      70% { box-shadow: 0 0 0 10px rgba(0, 240, 255, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(0, 240, 255, 0); }
+    }
+    
+    /* LOADING */
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(0,240,255,.3);
+      border-radius: 50%;
+      border-top-color: var(--neon-blue);
+      animation: spin 1s ease-in-out infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="animated-bg"></div>
+  
+  <header class="header">
+    <nav class="nav">
+      <a href="#" class="logo">NeuroFutura</a>
+      <ul class="nav-links">
+        <li><a href="#cursos">Cursos</a></li>
+        <li><a href="#test">Test IA</a></li>
+        <li><a href="#noticias">Noticias</a></li>
+        <li><a href="#sobre-mi">Sobre Mí</a></li>
+      </ul>
+      <div class="auth-buttons">
+        <a href="#" class="btn btn-secondary btn-small" id="login-btn">Acceso</a>
+        <a href="#" class="btn btn-primary btn-small" id="register-btn">Únete</a>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <!-- HERO SECTION -->
+    <section class="hero" id="hero">
+      <div class="hero-badge">🚀 Actualización automática semanal</div>
+      <h1 class="hero-title">El Futuro del Aprendizaje en IA</h1>
+      <p class="hero-subtitle">
+        Descubre los cursos más innovadores, las noticias que marcan tendencia y personaliza tu aprendizaje en el mundo de la Inteligencia Artificial.<br>
+        Todo actualizado cada semana y segmentado para ti.
+      </p>
+      <div class="hero-cta">
+        <a href="#cursos" class="btn btn-primary">Explorar Cursos</a>
+        <a href="#test" class="btn btn-secondary">Haz el Test IA</a>
+        <a href="#newsletter" class="btn btn-secondary">Suscríbete</a>
+      </div>
+    </section>
+
+    <!-- DASHBOARD (Hidden initially) -->
+    <section class="section dashboard" id="dashboard">
+      <h2 class="section-title">Mi Dashboard</h2>
+      <div class="user-stats">
+        <div class="stat-card">
+          <div class="stat-number">12</div>
+          <div class="stat-label">Cursos Completados</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">45h</div>
+          <div class="stat-label">Tiempo de Estudio</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">8</div>
+          <div class="stat-label">Certificados</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">95%</div>
+          <div class="stat-label">Promedio</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- COURSES SECTION -->
+    <section class="section" id="cursos">
+      <h2 class="section-title">Cursos Destacados y Virales</h2>
+      <p class="section-subtitle">Recomendados automáticamente según popularidad y valoración online.</p>
+      
+      <div class="search-container">
+        <input type="text" class="search-input" placeholder="Buscar cursos por nombre, proveedor o tema..." id="course-search">
+      </div>
+      
+      <div class="course-filters" id="course-filters">
+        <button class="filter-btn active" data-filter="all">Todos</button>
+        <button class="filter-btn" data-filter="principiante">Principiante</button>
+        <button class="filter-btn" data-filter="intermedio">Intermedio</button>
+        <button class="filter-btn" data-filter="avanzado">Avanzado</button>
+        <button class="filter-btn" data-filter="free">Gratis</button>
+        <button class="filter-btn" data-filter="premium">Premium</button>
+      </div>
+      
+      <div class="courses-grid" id="courses-list">
+        <!-- Courses will be loaded here -->
+      </div>
+    </section>
+
+    <!-- TEST SECTION -->
+    <section class="section" id="test">
+      <h2 class="section-title">Test de Mentalidad y Habilidades IA</h2>
+      <p class="section-subtitle">Responde y recibe recomendaciones personalizadas.</p>
+      <div class="test-card" id="test-block">
+        <div class="question" id="question">
+          <h3>¿Cuál es tu nivel actual con la IA?</h3>
+          <div class="option" onclick="nextTestQuestion(1, 'principiante')">Principiante total - Quiero empezar desde cero</div>
+          <div class="option" onclick="nextTestQuestion(1, 'intermedio')">Tengo conocimientos básicos</div>
+          <div class="option" onclick="nextTestQuestion(1, 'avanzado')">Nivel intermedio - Busco especializarme</div>
+          <div class="option" onclick="nextTestQuestion(1, 'experto')">Avanzado - Quiero profundizar en temas específicos</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- NEWS SECTION -->
+    <section class="section" id="noticias">
+      <h2 class="section-title">Noticias IA en Tiempo Real</h2>
+      <p class="section-subtitle">Últimas tendencias, investigaciones y lanzamientos en el mundo de la inteligencia artificial.</p>
+      <div class="news-grid" id="news-list">
+        <!-- News will be loaded here -->
+      </div>
+    </section>
+
+    <!-- NEWSLETTER SECTION -->
+    <section class="section" id="newsletter">
+      <h2 class="section-title">Suscríbete al Newsletter Semanal</h2>
+      <p class="section-subtitle">Recibe cada lunes los mejores cursos, noticias y recursos de IA seleccionados por nuestro sistema automático.</p>
+      <form class="newsletter-form" id="newsletter-form">
+        <input type="email" class="newsletter-input" placeholder="Tu correo electrónico" required id="newsletter-email">
+        <button type="submit" class="btn btn-primary">Suscribirse</button>
+      </form>
+    </section>
+
+    <!-- ABOUT SECTION -->
+    <section class="section" id="sobre-mi">
+      <h2 class="section-title">Sobre mí</h2>
+      <div class="about-content" style="max-width:700px;margin:0 auto;">
+        <div class="about-card" style="background:rgba(27,38,59,0.6);padding:2rem;border-radius:30px;">
+          <p class="about-description">
+            Especialista en análisis y automatización de procesos enfocados en la inteligencia artificial.  
+            Contacta conmigo para colaboraciones, ideas o dudas.
+          </p>
+          <div class="about-links" style="margin-top: 1.5rem;">
+            <a href="mailto:luismorenoglobal@gmail.com" class="btn btn-secondary">Contactar por email</a>
+            <a href="https://www.linkedin.com/in/luis-moreno-moreno" class="btn btn-secondary">LinkedIn</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- MODALS -->
+  <div id="loginModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2 style="color: var(--white); text-align: center; margin-bottom: 2rem;">Iniciar Sesión</h2>
+      <form id="login-form">
+        <div class="form-group">
+          <label class="form-label">Email:</label>
+          <input type="email" class="form-input" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Contraseña:</label>
+          <input type="password" class="form-input" required>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%;">Entrar</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="registerModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2 style="color: var(--white); text-align: center; margin-bottom: 2rem;">Crear Cuenta</h2
