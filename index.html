@@ -17,7 +17,7 @@
       --neon-pink: #ec4899;
       --success-green: #10b981;
       --warning-orange: #f59e0b;
-      --clear-bg: #f5fbff;
+      --clear-bg: #eff7fb;
       --clear-card: #fff;
       --clear-shadow: #c3e5fc;
       --clear-news-title: #2251a6;
@@ -43,7 +43,7 @@
       transition: filter 0.5s;
     }
     body.clear-mode .animated-bg {
-      filter: brightness(1.6) blur(2px) opacity(.13);
+      filter: brightness(1.6) blur(2px) opacity(.4);
     }
     header.header {
       width: 100%; padding: 1.2rem 2rem;
@@ -52,8 +52,7 @@
       transition: background 0.5s;
     }
     body.clear-mode header.header {
-      background: rgba(245,250,255,0.97);
-      border-bottom:1px solid #e2f2ff;
+      background: rgba(245,250,255,0.95);
     }
     nav.nav { max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
     .logo {
@@ -434,11 +433,14 @@
         </div>
       </div>
     </section>
+
     <!-- DASHBOARD DE USUARIO (noticias premium) -->
     <section id="user-dashboard" style="display:none;">
       <div class="user-news-section">
         <h2 class="user-news-title">📰 Noticias IA y Tecnología (Premium)</h2>
-        <div class="user-news-grid" id="user-news-list"></div>
+        <div class="user-news-grid" id="user-news-list">
+          <!-- Noticias para usuarios logueados -->
+        </div>
         <button class="btn btn-logout" id="logout-btn-2">Cerrar sesión</button>
       </div>
     </section>
@@ -489,7 +491,35 @@
     // BASE DE DATOS DE CURSOS
     // =======================
     const cursos = [
-      // ... (MISMO ARRAY QUE YA TENÍAS, OMITIDO POR ESPACIO) ...
+      // PRINCIPIANTE
+      { nombre: "Introduction to Robotic Process Automation (RPA)", proveedor: "Coursera (UiPath)", url: "https://www.coursera.org/learn/robotic-process-automation-rpa", nivel: "Principiante", tipo: "Gratis", descripcion: "Comienza desde cero con RPA y automatización empresarial.", duracion: "10h", popular: true },
+      { nombre: "Business Process Management Fundamentals", proveedor: "edX", url: "https://www.edx.org/course/business-process-management", nivel: "Principiante", tipo: "Gratis", descripcion: "Fundamentos de gestión de procesos empresariales.", duracion: "4h" },
+      { nombre: "Automation Anywhere University - RPA Basics", proveedor: "Automation Anywhere", url: "https://university.automationanywhere.com/", nivel: "Principiante", tipo: "Gratis", descripcion: "Curso introductorio oficial de Automation Anywhere.", duracion: "8h" },
+      { nombre: "Microsoft Power Platform Fundamentals (PL-900)", proveedor: "Microsoft Learn", url: "https://learn.microsoft.com/en-us/training/courses/pl-900t00", nivel: "Principiante", tipo: "Gratis", descripcion: "Bases de Power Automate, Power Apps y el ecosistema Microsoft.", duracion: "7h" },
+      { nombre: "AI for Everyone", proveedor: "Coursera (Andrew Ng)", url: "https://www.coursera.org/learn/ai-for-everyone", nivel: "Principiante", tipo: "Gratis", descripcion: "Fundamentos de inteligencia artificial sin requisitos técnicos previos.", duracion: "6h", popular: true },
+      { nombre: "Introduction to Artificial Intelligence", proveedor: "IBM (Coursera)", url: "https://www.coursera.org/learn/introduction-to-ai", nivel: "Principiante", tipo: "Gratis", descripcion: "Introducción amigable a la IA moderna.", duracion: "10h" },
+      { nombre: "Machine Learning for Business", proveedor: "Universidad de Pensilvania (Coursera)", url: "https://www.coursera.org/specializations/machine-learning-business", nivel: "Principiante", tipo: "Gratis", descripcion: "Machine Learning aplicado a negocios.", duracion: "12h" },
+      { nombre: "Robotic Process Automation (RPA) Foundations", proveedor: "LinkedIn Learning", url: "https://www.linkedin.com/learning/robotic-process-automation-rpa-foundations", nivel: "Principiante", tipo: "Premium", descripcion: "Introducción completa a RPA y casos de uso reales.", duracion: "5h" },
+      // INTERMEDIO
+      { nombre: "UiPath RPA Developer Advanced", proveedor: "UiPath Academy", url: "https://academy.uipath.com/", nivel: "Intermedio", tipo: "Gratis", descripcion: "Certificación oficial para desarrolladores RPA.", duracion: "30h", popular: true },
+      { nombre: "Blue Prism Professional Developer", proveedor: "Blue Prism University", url: "https://university.blueprism.com/", nivel: "Intermedio", tipo: "Gratis", descripcion: "Ruta profesional en Blue Prism.", duracion: "20h" },
+      { nombre: "Automation Anywhere Bot Developer", proveedor: "Automation Anywhere University", url: "https://university.automationanywhere.com/", nivel: "Intermedio", tipo: "Gratis", descripcion: "Desarrollo de bots en Automation Anywhere.", duracion: "15h" },
+      { nombre: "Microsoft Power Automate", proveedor: "Microsoft Learn", url: "https://learn.microsoft.com/en-us/power-automate/", nivel: "Intermedio", tipo: "Gratis", descripcion: "Ruta completa de aprendizaje en Power Automate.", duracion: "20h" },
+      { nombre: "Low-Code Application Development with Microsoft Power Platform", proveedor: "Pluralsight", url: "https://www.pluralsight.com/courses/microsoft-power-platform-low-code-application-development", nivel: "Intermedio", tipo: "Premium", descripcion: "Desarrollo avanzado de apps sin código tradicional.", duracion: "8h" },
+      { nombre: "Mendix Rapid Developer", proveedor: "Mendix Academy", url: "https://academy.mendix.com/link/paths/31/Rapid-Developer", nivel: "Intermedio", tipo: "Gratis", descripcion: "Desarrollo rápido de aplicaciones con Mendix.", duracion: "10h" },
+      { nombre: "Applied Machine Learning in Python", proveedor: "Universidad de Michigan (Coursera)", url: "https://www.coursera.org/learn/python-machine-learning", nivel: "Intermedio", tipo: "Gratis", descripcion: "ML aplicado con Python.", duracion: "15h" },
+      // AVANZADO
+      { nombre: "Intelligent Process Automation", proveedor: "MIT Professional Education", url: "https://professional.mit.edu/course-catalog/intelligent-process-automation", nivel: "Avanzado", tipo: "Premium", descripcion: "Automatización de procesos inteligente empresarial.", duracion: "40h", popular: true },
+      { nombre: "Advanced RPA with Cognitive Services", proveedor: "Pluralsight", url: "https://www.pluralsight.com/courses/rpa-advanced-cognitive-services", nivel: "Avanzado", tipo: "Premium", descripcion: "RPA avanzada con servicios cognitivos.", duracion: "12h" },
+      { nombre: "Deep Learning Specialization", proveedor: "Coursera (Andrew Ng)", url: "https://www.coursera.org/specializations/deep-learning", nivel: "Avanzado", tipo: "Premium", descripcion: "Especialización en Deep Learning.", duracion: "100h" },
+      { nombre: "Python for Automation", proveedor: "Automate the Boring Stuff", url: "https://automatetheboringstuff.com/", nivel: "Avanzado", tipo: "Gratis", descripcion: "Automatización práctica con Python.", duracion: "Variable" },
+      { nombre: "Advanced Computer Vision (CS231n)", proveedor: "Stanford", url: "http://cs231n.stanford.edu/", nivel: "Avanzado", tipo: "Gratis", descripcion: "Visión computacional avanzada.", duracion: "40h" },
+      { nombre: "Natural Language Processing (CS224n)", proveedor: "Stanford", url: "http://web.stanford.edu/class/cs224n/", nivel: "Avanzado", tipo: "Gratis", descripcion: "Procesamiento de lenguaje natural con Stanford.", duracion: "40h" },
+      { nombre: "Machine Learning Engineering for Production (MLOps)", proveedor: "Coursera (DeepLearning.AI)", url: "https://www.coursera.org/specializations/machine-learning-engineering-for-production-mlops", nivel: "Avanzado", tipo: "Premium", descripcion: "Implementación y despliegue de modelos de IA en producción.", duracion: "30h" },
+      // CERTIFICACIONES Y MÁS
+      { nombre: "UiPath Certified RPA Associate/Professional", proveedor: "UiPath Academy", url: "https://www.uipath.com/learning/certification", nivel: "Certificación", tipo: "Gratis", descripcion: "Certificaciones oficiales UiPath.", duracion: "Variable" },
+      { nombre: "Blue Prism Certified Professional Developer", proveedor: "Blue Prism University", url: "https://university.blueprism.com/", nivel: "Certificación", tipo: "Gratis", descripcion: "Certificación Developer Associate.", duracion: "Variable" },
+      { nombre: "Selenium WebDriver", proveedor: "Guru99", url: "https://www.guru99.com/selenium-tutorial.html", nivel: "Avanzado", tipo: "Gratis", descripcion: "Automatización de testing web.", duracion: "12h" },
       { nombre: "Docker y Kubernetes", proveedor: "Udemy", url: "https://www.udemy.com/course/docker-kubernetes/", nivel: "Avanzado", tipo: "Premium", descripcion: "Orquestación de procesos empresariales.", duracion: "20h" }
     ];
     // ================
