@@ -93,37 +93,6 @@
     .btn-small { padding: 0.5rem 1.2rem; font-size: 0.9rem; }
     .btn-logout { background: #fff; color: #2251a6; border: 2px solid #c3e5fc; }
     .btn-logout:hover { background: #eaf4fb; color: #1a2a3a; border-color: #8b5cf6; }
-    .btn-premium-news {
-      background: linear-gradient(90deg, #00f0ff 0%, #8b5cf6 100%);
-      color: #fff;
-      border: none;
-      border-radius: 28px;
-      font-size: 1.1rem;
-      font-weight: 700;
-      padding: 1.3rem 2.5rem;
-      box-shadow: 0 8px 32px #00f0ff44;
-      cursor: pointer;
-      margin-bottom: 1rem;
-      transition: box-shadow 0.18s, transform 0.18s;
-      display: inline-block;
-    }
-    .btn-premium-news:hover {
-      box-shadow: 0 12px 40px #8b5cf655, 0 1px 4px #00e0ff99;
-      transform: scale(1.045);
-    }
-    .news-premium-btn {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      margin: 2.5rem 0;
-    }
-    .premium-news-desc {
-      color: var(--light-blue);
-      font-size: 1rem;
-      text-align: center;
-      max-width: 400px;
-    }
     .hero {
       min-height: 100vh;
       display: flex;
@@ -429,7 +398,14 @@
     <section class="section" id="noticias">
       <h2 class="section-title">Noticias IA y Tecnología en Tiempo Real</h2>
       <p class="section-subtitle">Últimas tendencias, investigaciones y lanzamientos en IA y digitalización.</p>
-      <div id="news-list"></div>
+      <div class="news-grid" id="news-list">
+        <div class="news-card"><div class="news-image">🔒</div>
+          <div class="news-content">
+            <h3 class="news-title">Noticias premium solo para usuarios registrados</h3>
+            <p class="news-excerpt">Regístrate o inicia sesión para acceder al feed de noticias en tiempo real sobre IA y tecnología.</p>
+          </div>
+        </div>
+      </div>
     </section>
     <!-- NEWSLETTER -->
     <section class="section" id="newsletter">
@@ -456,6 +432,14 @@
             <a href="https://www.linkedin.com/in/luis-moreno-moreno" class="btn btn-secondary">LinkedIn</a>
           </div>
         </div>
+      </div>
+    </section>
+    <!-- DASHBOARD DE USUARIO (noticias premium) -->
+    <section id="user-dashboard" style="display:none;">
+      <div class="user-news-section">
+        <h2 class="user-news-title">📰 Noticias IA y Tecnología (Premium)</h2>
+        <div class="user-news-grid" id="user-news-list"></div>
+        <button class="btn btn-logout" id="logout-btn-2">Cerrar sesión</button>
       </div>
     </section>
   </main>
@@ -501,37 +485,229 @@
     </div>
   </footer>
   <script>
-    // ... tu array de cursos, renderCursos, test IA ... (COPIA TU LÓGICA AQUÍ, OMITIDO POR ESPACIO)
-
-    // ----------- NOTICIAS PUBLICAS/PREMIUM -----------
-    let usuarioLogueado = false;
-
-    function renderNoticiasPublicas() {
-      const newsList = document.getElementById('news-list');
-      if (usuarioLogueado) {
-        newsList.innerHTML = `
-          <div class="user-news-section">
-            <h2 class="user-news-title">📰 Noticias IA y Tecnología (Premium)</h2>
-            <div class="user-news-grid" id="user-news-list"></div>
-          </div>
-          <div style="text-align:center;">
-            <button class="btn btn-logout" id="logout-btn-2" style="margin-top:2rem;">Cerrar sesión</button>
-          </div>
-        `;
-        renderUserNews();
-        document.getElementById('logout-btn-2').onclick = desactivarModoUsuario;
-      } else {
-        newsList.innerHTML = `
-          <div class="news-premium-btn">
-            <button onclick="document.getElementById('login-btn').click()" class="btn btn-premium-news">
-              🔒 Noticias premium solo para usuarios registrados
-            </button>
-            <div class="premium-news-desc">Regístrate o inicia sesión para acceder al feed de noticias en tiempo real sobre IA y tecnología.</div>
-          </div>
-        `;
+    // =======================
+    // BASE DE DATOS DE CURSOS
+    // =======================
+    const cursos = [
+      // ... (MISMO ARRAY QUE YA TENÍAS, OMITIDO POR ESPACIO) ...
+      { nombre: "Docker y Kubernetes", proveedor: "Udemy", url: "https://www.udemy.com/course/docker-kubernetes/", nivel: "Avanzado", tipo: "Premium", descripcion: "Orquestación de procesos empresariales.", duracion: "20h" }
+    ];
+    // ================
+    // CARGA DE CURSOS
+    // ================
+    function renderCursos(filtroNivel = "all", search = "") {
+      const lista = document.getElementById('courses-list');
+      lista.innerHTML = '';
+      let cursosFiltrados = cursos.filter(curso =>
+        (filtroNivel === "all" || curso.nivel === filtroNivel || curso.tipo === filtroNivel) &&
+        (search === "" ||
+          curso.nombre.toLowerCase().includes(search.toLowerCase()) ||
+          curso.proveedor.toLowerCase().includes(search.toLowerCase()) ||
+          curso.descripcion.toLowerCase().includes(search.toLowerCase()))
+      );
+      if(cursosFiltrados.length === 0) {
+        lista.innerHTML = "<p style='color:#eee; text-align:center;'>No se encontraron cursos para ese filtro.</p>";
+        return;
       }
+      cursosFiltrados.forEach(curso => {
+        lista.innerHTML += `
+          <div class="course-card">
+            <div class="course-header">
+              <div class="course-badges">
+                <span class="course-badge badge-level">${curso.nivel}</span>
+                <span class="course-badge badge-${curso.tipo.toLowerCase()}">${curso.tipo}</span>
+                ${curso.popular ? '<span class="course-badge badge-popular">Popular</span>' : ""}
+              </div>
+            </div>
+            <div class="course-title">${curso.nombre}</div>
+            <div class="course-provider">${curso.proveedor}</div>
+            <div class="course-desc">${curso.descripcion}</div>
+            <div class="course-footer">
+              <span class="course-price">${curso.duracion}</span>
+              <a href="${curso.url}" class="btn btn-primary" target="_blank">Ver Curso</a>
+            </div>
+          </div>
+        `;
+      });
+    }
+    document.getElementById('course-search').addEventListener('input', e => {
+      const search = e.target.value;
+      const activeFilter = document.querySelector('.filter-btn.active').dataset.filter;
+      renderCursos(activeFilter, search);
+    });
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+        this.classList.add('active');
+        renderCursos(this.dataset.filter, document.getElementById('course-search').value);
+      });
+    });
+
+    // =========================
+    // TEST IA VISUAL MEJORADO
+    // =========================
+    const iaQuestions = [
+      {
+        q: "¿Qué te motiva más al aprender IA y automatización?",
+        options: [
+          "Automatizar tareas cotidianas y ahorrar tiempo",
+          "Resolver problemas complejos y analizar datos",
+          "Crear productos digitales o startups",
+          "Impulsar mi carrera profesional con nuevas skills"
+        ]
+      },
+      {
+        q: "¿Cuál es tu nivel actual en IA/RPA?",
+        options: [
+          "Principiante total",
+          "Ya he probado alguna herramienta básica",
+          "He hecho proyectos propios / implementaciones en empresa",
+          "Tengo certificaciones o experiencia avanzada"
+        ]
+      },
+      {
+        q: "¿Qué tipo de recursos prefieres?",
+        options: [
+          "Cursos paso a paso y vídeos introductorios",
+          "Retos prácticos y casos reales",
+          "Documentación técnica y papers",
+          "Comunidad, eventos y recomendaciones de expertos"
+        ]
+      }
+    ];
+
+    let iaStep = 0, iaAnswers = Array(iaQuestions.length).fill(null);
+
+    function renderIAQuestion() {
+      const block = document.getElementById("test-block");
+      if(iaStep >= iaQuestions.length) {
+        let nivel = "Principiante";
+        if(iaAnswers[1] === 1) nivel = "Intermedio";
+        if(iaAnswers[1] === 2) nivel = "Avanzado";
+        if(iaAnswers[1] === 3) nivel = "Certificación";
+        const recomendados = cursos.filter(c=>c.nivel === nivel);
+        let html = `<div class="ia-feedback fade-in"><h3>¡Listo!</h3>
+          <p>Tu perfil IA es: <b style="color:var(--neon-blue)">${nivel}</b>.</p>
+          <p><b>Cursos recomendados:</b></p>
+          <ul>`;
+        recomendados.slice(0,5).forEach(c=>html+=`<li><a href="${c.url}" target="_blank">${c.nombre}</a> <small>(${c.proveedor})</small></li>`);
+        html += `</ul><a href="#cursos" class="ia-btn" style="margin-top:1.2rem;">Ver todos los cursos</a></div>`;
+        block.innerHTML = html;
+        return;
+      }
+
+      // PROGRESS BAR
+      const pct = Math.round((iaStep)/iaQuestions.length*100);
+      let html = `
+        <div class="ia-step-label">Pregunta ${iaStep+1} de ${iaQuestions.length}</div>
+        <div class="ia-progress-bar-wrap"><div class="ia-progress-bar" style="width:${pct}%;"></div></div>
+        <div class="ia-question">${iaQuestions[iaStep].q}</div>
+        <div class="ia-options">`;
+      iaQuestions[iaStep].options.forEach((opt, idx)=>{
+        html += `<div class="ia-option${iaAnswers[iaStep]===idx?' selected':''}" tabindex="0"
+          onclick="selectIAOption(${idx})" onkeydown="if(event.key==='Enter'){selectIAOption(${idx})}">${opt}</div>`;
+      });
+      html += `</div>
+        <div class="ia-navigate">
+          <button class="ia-btn" onclick="prevIAQuestion()" ${iaStep===0?'disabled':''}>Anterior</button>
+          <button class="ia-btn" onclick="nextIAQuestion()" ${iaAnswers[iaStep]===null?'disabled':''}>
+            ${iaStep===iaQuestions.length-1?'Finalizar':'Siguiente'}
+          </button>
+        </div>
+      `;
+      block.innerHTML = html;
+
+      // Accesibilidad: focus en seleccionado
+      setTimeout(()=>{
+        const opts = document.querySelectorAll('.ia-option');
+        if(iaAnswers[iaStep]!==null) opts[iaAnswers[iaStep]].focus();
+      },50);
     }
 
+    function selectIAOption(idx){
+      iaAnswers[iaStep] = idx;
+      renderIAQuestion();
+    }
+    function prevIAQuestion(){
+      if(iaStep>0) iaStep--;
+      renderIAQuestion();
+    }
+    function nextIAQuestion(){
+      if(iaAnswers[iaStep]!==null && iaStep<iaQuestions.length) {
+        iaStep++;
+        renderIAQuestion();
+      }
+    }
+    renderIAQuestion();
+
+    // ===============
+    // NEWSLETTER DEMO
+    // ===============
+    document.getElementById('newsletter-form').addEventListener('submit', function(e){
+      e.preventDefault();
+      document.getElementById('newsletter-success').style.display = "block";
+      document.getElementById('newsletter-error').style.display = "none";
+      setTimeout(()=>{ document.getElementById('newsletter-success').style.display = "none"; }, 4000);
+      document.getElementById('newsletter-form').reset();
+    });
+
+    // =============
+    // LOGIN/REGISTER MODAL
+    // =============
+    function showModal(id) {
+      document.getElementById(id).style.display = "block";
+      document.body.style.overflow = "hidden";
+    }
+    function closeModal(id) {
+      document.getElementById(id).style.display = "none";
+      document.body.style.overflow = "";
+    }
+    document.getElementById("login-btn").onclick = function(e){e.preventDefault();showModal('loginModal');};
+    document.getElementById("register-btn").onclick = function(e){e.preventDefault();showModal('registerModal');};
+    document.getElementById("closeLogin").onclick = function(){closeModal('loginModal');};
+    document.getElementById("closeRegister").onclick = function(){closeModal('registerModal');};
+    window.onclick = function(event) {
+      if (event.target === document.getElementById('loginModal')) closeModal('loginModal');
+      if (event.target === document.getElementById('registerModal')) closeModal('registerModal');
+    };
+
+    // =============
+    // USUARIO Y DASHBOARD
+    // =============
+    let usuarioLogueado = false;
+    function activarModoUsuario() {
+      usuarioLogueado = true;
+      document.body.classList.add('clear-mode');
+      document.getElementById('user-dashboard').style.display = '';
+      document.getElementById('hero').style.display = 'none';
+      document.getElementById('cursos').style.display = 'none';
+      document.getElementById('test').style.display = 'none';
+      document.getElementById('noticias').style.display = 'none';
+      document.getElementById('newsletter').style.display = 'none';
+      document.getElementById('sobre-mi').style.display = 'none';
+      document.getElementById('auth-buttons').style.display = 'none';
+      document.getElementById('logout-btn').style.display = '';
+      renderUserNews();
+      window.scrollTo(0,0);
+    }
+    function desactivarModoUsuario() {
+      usuarioLogueado = false;
+      document.body.classList.remove('clear-mode');
+      document.getElementById('user-dashboard').style.display = 'none';
+      document.getElementById('hero').style.display = '';
+      document.getElementById('cursos').style.display = '';
+      document.getElementById('test').style.display = '';
+      document.getElementById('noticias').style.display = '';
+      document.getElementById('newsletter').style.display = '';
+      document.getElementById('sobre-mi').style.display = '';
+      document.getElementById('auth-buttons').style.display = '';
+      document.getElementById('logout-btn').style.display = 'none';
+      window.scrollTo(0,0);
+    }
+    document.getElementById('logout-btn').onclick = desactivarModoUsuario;
+    document.getElementById('logout-btn-2').onclick = desactivarModoUsuario;
+
+    // Noticias simuladas IA (puedes usar API real aquí)
     function renderUserNews() {
       const news = [
         {title:"OpenAI lanza GPT-5 y revoluciona la generación de texto",meta:"20/06/2025 · OpenAI",desc:"La nueva versión de GPT-5 permite crear textos aún más naturales y contextuales, abriendo puertas a aplicaciones empresariales sin precedentes."},
@@ -551,45 +727,11 @@
       document.getElementById('user-news-list').innerHTML = html;
     }
 
-    function activarModoUsuario() {
-      usuarioLogueado = true;
-      document.body.classList.add('clear-mode');
-      document.getElementById('auth-buttons').style.display = 'none';
-      document.getElementById('logout-btn').style.display = '';
-      renderNoticiasPublicas();
-    }
-
-    function desactivarModoUsuario() {
-      usuarioLogueado = false;
-      document.body.classList.remove('clear-mode');
-      document.getElementById('auth-buttons').style.display = '';
-      document.getElementById('logout-btn').style.display = 'none';
-      renderNoticiasPublicas();
-    }
-
-    document.getElementById('logout-btn').onclick = desactivarModoUsuario;
-
-    // ----------- MODALS LOGIN/REGISTER -----------
-    function showModal(id) {
-      document.getElementById(id).style.display = "block";
-      document.body.style.overflow = "hidden";
-    }
-    function closeModal(id) {
-      document.getElementById(id).style.display = "none";
-      document.body.style.overflow = "";
-    }
-    document.getElementById("login-btn").onclick = function(e){e.preventDefault();showModal('loginModal');};
-    document.getElementById("register-btn").onclick = function(e){e.preventDefault();showModal('registerModal');};
-    document.getElementById("closeLogin").onclick = function(){closeModal('loginModal');};
-    document.getElementById("closeRegister").onclick = function(){closeModal('registerModal');};
-    window.onclick = function(event) {
-      if (event.target === document.getElementById('loginModal')) closeModal('loginModal');
-      if (event.target === document.getElementById('registerModal')) closeModal('registerModal');
-    };
+    // Login/Register simulados
     document.getElementById('login-form').onsubmit = function(e){
       e.preventDefault();
       closeModal('loginModal');
-      setTimeout(activarModoUsuario, 400);
+      setTimeout(activarModoUsuario, 400); // efecto suave
     }
     document.getElementById('register-form').onsubmit = function(e){
       e.preventDefault();
@@ -597,10 +739,10 @@
       setTimeout(activarModoUsuario, 400);
     }
 
-    // ----------- TU LÓGICA DE CURSOS, TEST, NEWSLETTER, ETC (COPIA/PEGA AQUÍ) -----------
-
-    // Inicialización
-    window.onload = function() { renderCursos(); renderNoticiasPublicas(); }
+    // =============
+    // INICIALIZACIÓN
+    // =============
+    window.onload = function() { renderCursos(); }
   </script>
 </body>
 </html>
